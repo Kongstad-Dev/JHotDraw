@@ -14,50 +14,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'adopt'
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
 
-    - name: Run Checkstyle (Java Linter)
-      run: mvn checkstyle:check
+      - name: Run Checkstyle (Java Linter)
+        run: mvn checkstyle:check
 
 
-    - name: Build with Maven
-      run: mvn install -Djava.awt.headless=true -DskipTests
+      - name: Build with Maven
+        run: mvn install -Djava.awt.headless=true -DskipTests
 
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  jobs:
+    validate:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v3
 
-      - name: Validate Commit Messages
-        run: |
-          PROHIBITED_WORDS = "Bitches | Bomba | Bombaclaat | Fuck | Shit" 
-          REQUIRED_WORDS = " fixed | Changed | cleaned up"
-          
-           # Get commit messages
-          COMMITS=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
+        - name: Validate Commit Messages
+          run: |
+            # Define the list of prohibited words and required words
+            PROHIBITED_WORDS="Bitches|Bomba|Bombaclaat|Fuck|Shit"
+            REQUIRED_WORDS="fixed|Changed|cleaned up"
 
-          # Check for prohibited words
-          for WORD in $PROHIBITED_WORDS; do
-            if echo "$COMMITS" | grep -E "$WORD" > /dev/null; then
-              echo "Commit message contains prohibited word: $WORD"
+            # Get commit messages
+            COMMITS=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
+
+            # Initialize error flag
+            ERROR_FLAG=0
+
+            # Check for prohibited words
+            echo "Checking for prohibited words..."
+            for WORD in $(echo $PROHIBITED_WORDS | tr "|" "\n"); do
+              if echo "$COMMITS" | grep -E "$WORD" > /dev/null; then
+                echo "Commit message contains prohibited word: $WORD"
+                ERROR_FLAG=1
+              fi
+            done
+
+            # Check for required words
+            echo "Checking for required words..."
+            if ! echo "$COMMITS" | grep -E "$REQUIRED_WORDS" > /dev/null; then
+              echo "Commit message must contain one of the following words: $REQUIRED_WORDS"
+              ERROR_FLAG=1
+            fi
+
+            # Exit with error if needed
+            if [ $ERROR_FLAG -ne 0 ]; then
+              echo "Commit message validation failed."
               exit 1
             fi
-          done
 
-          # Check for required words
-          if ! echo "$COMMITS" | grep -E "$REQUIRED_WORDS" > /dev/null; then
-            echo "Commit message must contain one of the following words: $REQUIRED_WORDS"
-            exit 1
-          fi
-
-          echo "Commit messages are valid."
-        
-          |
+            echo "Commit messages are valid."
+          shell: /usr/bin/bash
