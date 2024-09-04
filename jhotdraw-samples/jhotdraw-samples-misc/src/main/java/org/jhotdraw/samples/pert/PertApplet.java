@@ -232,11 +232,7 @@ public class PertApplet extends JApplet {
     private void initComponents() {
         toolButtonGroup = new javax.swing.ButtonGroup();
     }// </editor-fold>//GEN-END:initComponents
-public static void main(String[] args) {
-    if (GraphicsEnvironment.isHeadless()) {
-        System.out.println("Running in headless mode. Skipping GUI initialization.");
-        // Optionally, you could run headless tests or operations here
-    } else {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -251,8 +247,6 @@ public static void main(String[] args) {
             }
         });
     }
-}
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup toolButtonGroup;
     // End of variables declaration//GEN-END:variables
