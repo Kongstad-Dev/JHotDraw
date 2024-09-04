@@ -1,53 +1,25 @@
-# Basic YML Configuration
+# .github/workflows/main.yml
 
-on: [push]
+name: Java CI with Linting
+
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
 
-      - name: Build with Maven
-        run: mvn clean install
+    - name: Build with Maven
+      run: mvn clean install
 
-
-# linting.yml
-
-# Linting Rules Configuration
-linting:
-  indentation:
-    size: 4  # Use 4 spaces for indentation
-    type: space  # Indentation type (space or tab)
-  maxLineLength: 100  # Maximum line length
-  braces:
-    useAlways: true  # Always use braces even for single-line statements
-    style: sameLine  # Opening brace on the same line as the statement
-  namingConventions:
-    classes: PascalCase  # Class names should be in PascalCase
-    methodsAndVariables: camelCase  # Methods and variables should be in camelCase
-    constants: UPPER_CASE  # Constants should be in UPPER_CASE
-  whitespace:
-    aroundOperators: true  # Require whitespace around operators (e.g., a + b)
-    afterKeywords: true  # Require space after keywords like 'if' and 'for'
-  comments:
-    style: javadoc  # Use Javadoc style comments for public methods and classes
-
-# Commit Message Guidelines
-commitMessages:
-  maxLength:
-    subject: 50  # Limit the subject line to 50 characters
-    body: 72  # Wrap the body text at 72 characters
-  imperativeMood: true  # Use the imperative mood in subject lines
-  capitalizedSubject: true  # Capitalize the first letter of the subject line
-  noPeriodInSubject: true  # Do not end the subject line with a period
-  includeBody: true  # Encourage detailed body text for complex changes
-  referenceIssues: true  # Encourage referencing related issues (e.g., 'Fixes #123')
-
+    - name: Run Checkstyle (Java Linter)
+      run: mvn checkstyle:check
