@@ -1,0 +1,12 @@
+# Basic YML Configuration
+
+project:
+  name: JHotDraw
+  version: 0.0.1
+
+application:
+  port: 8080
+  environment: development
+
+logging:
+  level: INFO
