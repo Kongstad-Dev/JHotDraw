@@ -23,8 +23,10 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
+    - name: Run Checkstyle (Java Linter)
+      run: mvn checkstyle:check
+
+
     - name: Build with Maven
       run: mvn install -Djava.awt.headless=true -DskipTests
 
-    - name: Run Checkstyle (Java Linter)
-      run: mvn checkstyle:check
