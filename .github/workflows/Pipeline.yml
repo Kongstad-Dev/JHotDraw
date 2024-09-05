@@ -92,3 +92,46 @@ jobs:
       run: mvn com.github.spotbugs:spotbugs-maven-plugin:check --batch-mode --no-transfer-progress
     
 
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Validate Commit Messages
+        run: |
+          PROHIBITED_WORDS = "Bitches | Bomba | Bombaclaat | Fuck | Shit" 
+          REQUIRED_WORDS = " fixed | Changed | cleaned up"
+          
+           # Get commit messages
+          COMMITS=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
+          
+          
+          # Initialize error flag
+          ERROR_FLAG=0
+          
+          # Check for prohibited words
+               echo "Checking for prohibited words..."
+               for WORD in $(echo $PROHIBITED_WORDS | tr "|" "\n"); do
+               if echo "$COMMITS" | grep -E "$WORD" > /dev/null; then
+               echo "Commit message contains prohibited word: $WORD"
+               ERROR_FLAG=1
+               fi
+               done
+          
+          
+          # Check for required words
+          echo "Checking for required words..."
+          if ! echo "$COMMITS" | grep -E "$REQUIRED_WORDS" > /dev/null; then
+            echo "Commit message must contain one of the following words: $REQUIRED_WORDS"
+            ERROR_FLAG=1
+          fi
+          
+          # Exit with error if needed
+               if [ $ERROR_FLAG -ne 0 ]; then
+               echo "Commit message validation failed."
+               exit 1
+               fi
+               
+               echo "Commit messages are valid."
+        shell: /usr/bin/bash
