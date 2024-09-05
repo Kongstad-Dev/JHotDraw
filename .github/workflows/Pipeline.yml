@@ -22,11 +22,73 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+  
+  linting:
+    runs-on: ubuntu-latest
 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
     - name: Run Checkstyle (Java Linter)
       run: mvn checkstyle:check
 
+  
+  code-coverage:
+    runs-on: ubuntu-latest
 
-    - name: Build with Maven
-      run: mvn install -Djava.awt.headless=true -DskipTests
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Generate code coverage report
+      run: mvn jacoco:report --batch-mode --no-transfer-progress
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+          files: ./target/site/jacoco/jacoco.xml
+          fail_ci_if_error: true
+          verbose: true
+  
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Run unit tests with Maven
+      run: mvn test --batch-mode --no-transfer-progress
+  
+  static-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Run SpotBugs analysis
+      run: mvn com.github.spotbugs:spotbugs-maven-plugin:check --batch-mode --no-transfer-progress
+    
 
