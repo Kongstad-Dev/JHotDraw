@@ -25,7 +25,7 @@ public class UngroupAction extends GroupAction {
     /**
      * Creates a new instance.
      */
-    private CompositeFigure prototype;
+    //private CompositeFigure prototype;
 
     /**
      * Creates a new instance.

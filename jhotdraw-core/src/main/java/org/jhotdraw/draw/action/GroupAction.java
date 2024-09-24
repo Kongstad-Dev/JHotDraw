@@ -31,6 +31,7 @@ public class GroupAction extends AbstractSelectedAction {
      * If this variable is false, this action ungroups figures.
      */
     private boolean isGroupingAction;
+    private String labelPath = "org.jhotdraw.draw.Labels";
 
     /**
      * Creates a new instance.
@@ -48,7 +49,7 @@ public class GroupAction extends AbstractSelectedAction {
         this.prototype = prototype;
         this.isGroupingAction = isGroupingAction;
         ResourceBundleUtil labels
-                = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                = ResourceBundleUtil.getBundle(labelPath);
         labels.configureAction(this, ID);
         updateEnabledState();
     }
@@ -87,7 +88,7 @@ public class GroupAction extends AbstractSelectedAction {
                     @Override
                     public String getPresentationName() {
                         ResourceBundleUtil labels
-                                = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                                = ResourceBundleUtil.getBundle(labelPath);
                         return labels.getString("edit.groupSelection.text");
                     }
 
@@ -122,7 +123,7 @@ public class GroupAction extends AbstractSelectedAction {
                     @Override
                     public String getPresentationName() {
                         ResourceBundleUtil labels
-                                = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                                = ResourceBundleUtil.getBundle(labelPath);
                         return labels.getString("edit.ungroupSelection.text");
                     }
 
