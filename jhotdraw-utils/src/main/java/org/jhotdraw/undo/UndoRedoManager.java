@@ -10,6 +10,8 @@ package org.jhotdraw.undo;
 import java.awt.event.*;
 import java.beans.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
@@ -21,11 +23,10 @@ import org.jhotdraw.util.*;
  * @author Werner Randelshofer
  * @version $Id$
  */
-public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManager {
+public class UndoRedoManager extends UndoManager {
 
     private static final long serialVersionUID = 1L;
     protected PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
-    private static final boolean DEBUG = false;
     /**
      * The resource bundle used for internationalisation.
      */
@@ -83,8 +84,9 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
             try {
                 undo();
             } catch (CannotUndoException e) {
-                System.err.println("Cannot undo: " + e);
-                e.printStackTrace();
+                if (logger.isLoggable(Level.SEVERE)) {
+                    logger.log(Level.SEVERE, () -> "Cannot undo: " + e);
+                }
             }
         }
     }
@@ -110,7 +112,9 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
             try {
                 redo();
             } catch (CannotRedoException e) {
-                System.out.println("Cannot redo: " + e);
+                if (logger.isLoggable(Level.SEVERE)) {
+                    logger.log(Level.SEVERE, () -> "Cannot redo: " + e);
+                }
             }
         }
     }
@@ -139,7 +143,7 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
         redoAction = new RedoAction();
     }
 
-    public void setLocale(Locale l) {
+    public static void setLocale(Locale l) {
         labels = ResourceBundleUtil.getBundle("org.jhotdraw.undo.Labels", l);
     }
 
@@ -147,7 +151,7 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
      * Discards all edits.
      */
     @Override
-    public void discardAllEdits() {
+    public synchronized void discardAllEdits() {
         super.discardAllEdits();
         updateActions();
         setHasSignificantEdits(false);
@@ -185,10 +189,13 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
      * @see CompoundEdit#end
      * @see CompoundEdit#addEdit
      */
+
+    private transient Logger logger = Logger.getLogger(getClass().getName());
+
     @Override
-    public boolean addEdit(UndoableEdit anEdit) {
-        if (DEBUG) {
-            System.out.println("UndoRedoManager@" + hashCode() + ".add " + anEdit);
+    public synchronized boolean addEdit(UndoableEdit anEdit) {
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("UndoRedoManager@%d.add %s", hashCode(), anEdit));
         }
         if (undoOrRedoInProgress) {
             anEdit.die();
@@ -222,10 +229,9 @@ public class UndoRedoManager extends UndoManager { //javax.swing.undo.UndoManage
      */
     private void updateActions() {
         String label;
-        if (DEBUG) {
-            System.out.println("UndoRedoManager@" + hashCode() + ".updateActions "
-                    + editToBeUndone()
-                    + " canUndo=" + canUndo() + " canRedo=" + canRedo());
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("UndoRedoManager@%d.updateActions %s canUndo=%b canRedo=%b",
+                    hashCode(), editToBeUndone(), canUndo(), canRedo()));
         }
         if (canUndo()) {
             undoAction.setEnabled(true);
