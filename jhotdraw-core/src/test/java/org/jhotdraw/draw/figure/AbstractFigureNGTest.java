@@ -61,6 +61,9 @@ public class AbstractFigureNGTest {
         new AbstractFigureImpl().changed();
     }
 
+
+
+
     @Test
     public void testWillChangeChangedEvents() {
         AbstractFigure figure = new AbstractFigureImpl();
