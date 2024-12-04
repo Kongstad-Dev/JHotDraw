@@ -41,7 +41,7 @@ public abstract class AbstractSelectedAction
         extends AbstractAction implements Disposable {
 
     private static final long serialVersionUID = 1L;
-    private DrawingEditor editor;
+    private transient DrawingEditor editor;
     transient private DrawingView activeView;
 
     private class EventHandler implements PropertyChangeListener, FigureSelectionListener, Serializable {
