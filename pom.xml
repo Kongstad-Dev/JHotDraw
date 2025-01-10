@@ -117,6 +117,19 @@
 						<artifactId>checkstyle</artifactId>
 						<version>8.29</version>
 					</dependency>
+					<!-- maven dependency to [JUnit4] -->
+					<dependency>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+						<version>4.13.2</version>
+						<scope>test</scope>
+					</dependency>
+					<!-- mockito dependency -->
+					<dependency>
+						<groupId>org.mockito</groupId>
+						<artifactId>mockito-core</artifactId>
+						<version>5.7.0</version>
+					</dependency>
 				</dependencies>
 			</plugin>
 		</plugins>
